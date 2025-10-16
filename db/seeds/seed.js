@@ -1,7 +1,7 @@
 const db = require("../connection");
 const format = require("pg-format");
 const { userData } = require("../data/test-data");
-const { convertTimestampToDate } = require("./utils");
+const { convertTimestampToDate, marryFunc } = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db
@@ -104,14 +104,17 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       const insertArticles = format(
         `INSERT INTO Articles
         (title, topic, author, body, created_at, votes, article_img_url)
-        VALUES %L;`,
+        VALUES %L
+        RETURNING *;`,
         formattedArticles
       );
 
       return db.query(insertArticles);
     })
-    .then(() => {
-      const correctedCommentsData = commentData.map(convertTimestampToDate);
+    .then(({ rows }) => {
+      const lookUpObject = marryFunc(commentData, rows);
+      console.log(lookUpObject);
+      const correctedCommentsData = lookUpObject.map(convertTimestampToDate);
       const formattedComments = correctedCommentsData.map(
         ({ article_id, body, votes, author, created_at }) => [
           article_id,
