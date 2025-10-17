@@ -1,5 +1,12 @@
 \c nc_news
-SELECT * FROM topics;
-SELECT * FROM articles;
-SELECT * FROM comments;
-SELECT * FROM users;
+SELECT * FROM articles
+WHERE topic = 'coding';
+SELECT * FROM comments
+Where votes < 0;
+SELECT * FROM topic;
+SELECT * FROM articles
+WHERE user = 'grumy19';
+SELECT * FROM comments
+WHERE votes > 10;
+RETURNING *
+

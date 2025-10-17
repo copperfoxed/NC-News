@@ -11,14 +11,25 @@ exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 Marry Article_ID -> Title
 */
 
-exports.marryFunc = (data, rows) => {
-  return data.map((comment) => {
-    const marriedComments = rows.find(
-      (article) => article.title === comment.article_title
-    );
+exports.marryFunc = (arr1, arr2, key, arg, arg2) => {
+  return arr1.map((object) => {
+    const marriedData = arr2.find((content) => content[key] === object[arg]);
     return {
-      article_id: marriedComments.article_id,
-      ...comment,
+      [arg2]: marriedData.article_id,
+      ...object,
     };
   });
 };
+
+// exports.createLookupObj = (arr, key, value) => {
+//   const lookUpObj = {};
+
+//   arr.forEach((object) => {
+//     const lookUpKey = object[key];
+//     const lookUpValue = object[value];
+
+//     lookUpObj[lookUpKey] = lookUpValue;
+//   });
+
+//   return lookUpObj;
+// };

@@ -112,7 +112,13 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query(insertArticles);
     })
     .then(({ rows }) => {
-      const lookUpObject = marryFunc(commentData, rows);
+      const lookUpObject = marryFunc(
+        commentData,
+        rows,
+        "title",
+        "article_title",
+        "article_id"
+      );
       console.log(lookUpObject);
       const correctedCommentsData = lookUpObject.map(convertTimestampToDate);
       const formattedComments = correctedCommentsData.map(
