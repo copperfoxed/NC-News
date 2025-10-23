@@ -119,7 +119,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         "article_title",
         "article_id"
       );
-      console.log(lookUpObject);
       const correctedCommentsData = lookUpObject.map(convertTimestampToDate);
       const formattedComments = correctedCommentsData.map(
         ({ article_id, body, votes, author, created_at }) => [
