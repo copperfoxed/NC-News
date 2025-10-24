@@ -243,8 +243,8 @@ describe("app testing", () => {
         .patch(`/api/articles/${articleNum}`)
         .send(incVotes)
         .expect(201)
-        .then(({ body }) => {
-          const { article } = body;
+        .then((res) => {
+          const { article } = res.body;
           expect(article).toBeInstanceOf(Object);
           expect(article).toHaveProperty("article_id", articleNum);
           expect(article).toHaveProperty("votes");
@@ -256,8 +256,8 @@ describe("app testing", () => {
         .patch(`/api/articles/${articleNum}`)
         .send(negVotes)
         .expect(201)
-        .then(({ body }) => {
-          const { article } = body;
+        .then((res) => {
+          const { article } = res.body;
           expect(article.votes).toBe(100 + negVotes.inc_votes);
         });
     });
@@ -266,8 +266,8 @@ describe("app testing", () => {
         .patch(`/api/articles/${articleNum}`)
         .send({ inc_votes: "ten" })
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid Input: 'votes' must be a number");
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid Input: 'votes' must be a number");
         });
     });
     it("responds with Status code: 400 when article_id is not a number accompanyied by string 'Bad Request'", () => {
@@ -275,8 +275,8 @@ describe("app testing", () => {
         .patch(`/api/articles/four_hundred`)
         .send(incVotes)
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Bad Request");
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
         });
     });
     it("responds with Status code: 404 when article_id is an article that does not exist, accompanied by 'Not Found'", () => {
@@ -284,8 +284,8 @@ describe("app testing", () => {
         .patch(`/api/articles/404`)
         .send(incVotes)
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Not Found");
+        .then((res) => {
+          expect(res.body.msg).toBe("Not Found");
         });
     });
     it("responds with Status code: 400 when votes field is empty, accompanyied by 'Invalid Input: votes must be an number'", () => {
@@ -293,8 +293,43 @@ describe("app testing", () => {
         .patch(`/api/articles/1`)
         .send({ inc_votes: "" })
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid Input: 'votes' must be a number");
+        .then((res) => {
+          expect(res.body.msg).toBe("Invalid Input: 'votes' must be a number");
+        });
+    });
+  });
+
+  describe("DELETE /api/comments/:comment_id", () => {
+    it("response returns an empty comment and status code 204 as well as correctly deleting the comment", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then((res) => {
+          expect(res.body).toEqual({});
+        })
+        .then(() => {
+          return request(app)
+            .delete("/api/comments/1")
+            .then((res) => {
+              expect(res.status).toBe(404);
+              expect(res.body.msg).toBe("Not Found");
+            });
+        });
+    });
+    it("responds with Status code: 404 when comment_id is a comment that does not exist, accompanied by 'Not Found'", () => {
+      return request(app)
+        .delete(`/api/comments/404`)
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe("Not Found");
+        });
+    });
+    it("responds with Status code: 400 when comment_id is not a valid number accompanyied by string 'Bad Request'", () => {
+      return request(app)
+        .delete(`/api/comments/1.5`)
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
         });
     });
   });
