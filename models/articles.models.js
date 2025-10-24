@@ -30,7 +30,12 @@ exports.incVotesByArticleID = (id, inc_votes) => {
     });
 };
 
-exports.findAllArticles = (sorted_by = "created_at", order = "DESC") => {
+exports.findAllArticles = (
+  sorted_by = "created_at",
+  order = "DESC",
+  topic = undefined
+) => {
+  const topicWhiteList = ["mitch", "cats", undefined];
   const validSortOptions = [
     "article_id",
     "author",
@@ -39,14 +44,26 @@ exports.findAllArticles = (sorted_by = "created_at", order = "DESC") => {
     "votes",
   ];
   const validOrderOptions = ["DESC", "ASC"];
+  console.log(topic);
   if (
     !validSortOptions.includes(sorted_by) ||
-    !validOrderOptions.includes(order)
+    !validOrderOptions.includes(order) ||
+    !topicWhiteList.includes(topic)
   ) {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request",
+    });
   }
   const query = `SELECT article_id, author, title, topic, created_at, votes, article_img_url FROM articles ORDER BY ${sorted_by} ${order}`;
-  return db.query(query).then(({ rows }) => {
-    return rows;
-  });
+  const topicQuery = `SELECT article_id, author, title, topic, created_at, votes, article_img_url FROM articles WHERE topic = '${topic}' ORDER BY ${sorted_by} ${order}`;
+  if (topic !== undefined && topicWhiteList.includes(topic)) {
+    return db.query(topicQuery).then(({ rows }) => {
+      return rows;
+    });
+  } else {
+    return db.query(query).then(({ rows }) => {
+      return rows;
+    });
+  }
 };

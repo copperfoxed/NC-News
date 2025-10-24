@@ -383,4 +383,45 @@ describe("app testing", () => {
         });
     });
   });
+
+  describe.only("GET /api/articles (topic query)", () => {
+    it("200: Should respond with selected topics when given a query", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "article_id", order: "DESC", topic: "mitch" })
+        .expect(200)
+        .then((res) => {
+          const apiArticles = res.body.articles;
+          expect(apiArticles).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("articles");
+          expect(apiArticles).toBeInstanceOf(Array);
+          expect(apiArticles).toBeSortedBy("article_id", { descending: true });
+          apiArticles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    it("200: should respond with an ordered array when not fed a topic", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "article_id", order: "DESC" })
+        .expect(200)
+        .then((res) => {
+          const apiArticles = res.body.articles;
+          expect(apiArticles).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("articles");
+          expect(apiArticles).toBeInstanceOf(Array);
+          expect(apiArticles).toBeSortedBy("article_id", { descending: true });
+        });
+    });
+    it("400: should respond with 'Bad Request' when given a topic that doesnt exist/isnt in whitelist", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "article_id", order: "DESC", topic: "lizard" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+  });
 });
