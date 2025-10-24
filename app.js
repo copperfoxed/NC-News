@@ -4,6 +4,7 @@ const db = require("./db/connection");
 const {
   fetchArticleById,
   updateVotesByArticleID,
+  fetchAllArticles,
 } = require("./controllers/articles.controllers");
 const {
   fetchCommentsByArticleID,
@@ -27,15 +28,7 @@ app.get("/api/topics", (req, res) => {
   });
 });
 
-app.get("/api/articles", (req, res) => {
-  return db
-    .query(
-      `SELECT article_id, author, title, topic, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC`
-    )
-    .then(({ rows }) => {
-      res.status(200).send({ articles: rows });
-    });
-});
+app.get("/api/articles", fetchAllArticles);
 
 app.get("/api/users", (req, res) => {
   return db.query(`SELECT * FROM users`).then(({ rows }) => {

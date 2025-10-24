@@ -1,7 +1,17 @@
 const {
   getArticleById,
   incVotesByArticleID,
+  findAllArticles,
 } = require("../models/articles.models");
+
+exports.fetchAllArticles = (req, res, next) => {
+  const { sorted_by, order } = req.query;
+  findAllArticles(sorted_by, order)
+    .then((rows) => {
+      res.status(200).send({ articles: rows });
+    })
+    .catch((err) => next(err));
+};
 
 exports.fetchArticleById = (req, res) => {
   const { article_id } = req.params;

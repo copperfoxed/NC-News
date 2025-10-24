@@ -141,7 +141,7 @@ describe("app testing", () => {
           expect(apiComments).toBeSortedBy("created_at", { descending: true });
         });
     });
-    it("Responce contains the following properties: comment_id, votes, created_at, author, body, article_id", () => {
+    it("Response contains the following properties: comment_id, votes, created_at, author, body, article_id", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .then((res) => {
@@ -330,6 +330,56 @@ describe("app testing", () => {
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+  });
+
+  describe("GET /api/articles (sorting Queries)", () => {
+    it("200: returns a default sorted array of articles by created_at and DESC", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((res) => {
+          const apiArticles = res.body.articles;
+          expect(apiArticles).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("articles");
+          expect(apiArticles).toBeInstanceOf(Array);
+          expect(apiArticles).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    it("returns a sorted array when given a column and order, in ths case 'author' and 'ASC'", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "author", order: "ASC" })
+        .expect(200)
+        .then((res) => {
+          const apiArticles = res.body.articles;
+          expect(apiArticles).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("articles");
+          expect(apiArticles).toBeInstanceOf(Array);
+          expect(apiArticles).toBeSortedBy("author", { descending: false });
+        });
+    });
+    it("returns status 400 and 'Bad Request' when sort method or order, isnt in whitelst", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "Tully", order: "Mouldeen" })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+    it("returns a sorted array when given a column and order, in ths case 'author' and 'ASC'", () => {
+      return request(app)
+        .get("/api/articles")
+        .query({ sorted_by: "article_id", order: "DESC" })
+        .expect(200)
+        .then((res) => {
+          const apiArticles = res.body.articles;
+          expect(apiArticles).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("articles");
+          expect(apiArticles).toBeInstanceOf(Array);
+          expect(apiArticles).toBeSortedBy("article_id", { descending: true });
         });
     });
   });
