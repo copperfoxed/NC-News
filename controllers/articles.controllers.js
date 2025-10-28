@@ -27,7 +27,6 @@ exports.fetchArticleById = (req, res) => {
       });
     })
     .then((articleWithCount) => {
-      console.log(articleWithCount);
       res.status(200).send({ article: articleWithCount });
     });
 };
