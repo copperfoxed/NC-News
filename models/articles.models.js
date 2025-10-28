@@ -44,7 +44,6 @@ exports.findAllArticles = (
     "votes",
   ];
   const validOrderOptions = ["DESC", "ASC"];
-  console.log(topic);
   if (
     !validSortOptions.includes(sorted_by) ||
     !validOrderOptions.includes(order) ||
