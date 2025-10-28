@@ -9,6 +9,8 @@
     "test": "psql -f db/setup-dbs.sql && jest app.test.js",
     "prepare": "husky install",
     "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed",
+    "seed": "node ./db/seeds/run-seed.js",
     "test-seed": "jest seed.test.js"
   },
   "repository": {
@@ -28,11 +30,11 @@
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
     "jest-sorted": "^1.0.15",
-    "pg": "^8.16.3",
-    "pg-format": "^1.0.4",
     "supertest": "^7.1.4"
   },
   "dependencies": {
+    "pg": "^8.16.3",
+    "pg-format": "^1.0.4",
     "dotenv": "^16.4.7"
   },
   "jest": {
