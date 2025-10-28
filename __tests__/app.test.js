@@ -384,7 +384,7 @@ describe("app testing", () => {
     });
   });
 
-  describe.only("GET /api/articles (topic query)", () => {
+  describe("GET /api/articles (topic query)", () => {
     it("200: Should respond with selected topics when given a query", () => {
       return request(app)
         .get("/api/articles")
@@ -421,6 +421,38 @@ describe("app testing", () => {
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toBe("Bad Request");
+        });
+    });
+  });
+  describe("GET /api/articles/:artcle_id (comment count)", () => {
+    it("200: Should respond with the correct article, appended with a total count of all comments", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .then((res) => {
+          const article = res.body.article;
+          expect(res.body).toBeInstanceOf(Object);
+          expect(res.body).toHaveProperty("article");
+          expect(article).toBeInstanceOf(Object);
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("body");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+          expect(article.comment_count).toBe(11);
+        });
+    });
+    it("200: Should return 0 on comment_count when there are no comments on a specific article", () => {
+      return request(app)
+        .get("/api/articles/4")
+        .expect(200)
+        .then((res) => {
+          const article = res.body.article;
+          expect(article).toHaveProperty("comment_count");
+          expect(article.comment_count).toBe(0);
         });
     });
   });

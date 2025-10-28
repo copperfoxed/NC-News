@@ -3,6 +3,7 @@ const {
   incVotesByArticleID,
   findAllArticles,
 } = require("../models/articles.models");
+const { getCommentsAmount } = require("../models/comments.models");
 
 exports.fetchAllArticles = (req, res, next) => {
   const { sorted_by, order, topic } = req.query;
@@ -15,9 +16,20 @@ exports.fetchAllArticles = (req, res, next) => {
 
 exports.fetchArticleById = (req, res) => {
   const { article_id } = req.params;
-  getArticleById(article_id).then((article) => {
-    res.status(200).send({ article: article });
-  });
+  getArticleById(article_id)
+    .then((article) => {
+      return getCommentsAmount(article_id).then((comments) => {
+        let comment_count = 0;
+        if (comments.length > 0) {
+          comment_count += comments.length;
+        }
+        return { ...article, comment_count };
+      });
+    })
+    .then((articleWithCount) => {
+      console.log(articleWithCount);
+      res.status(200).send({ article: articleWithCount });
+    });
 };
 
 exports.updateVotesByArticleID = (req, res, next) => {
